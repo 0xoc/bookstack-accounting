@@ -35,21 +35,21 @@ class Transaction(models.Model):
 
     account = models.ForeignKey('Account', on_delete=models.CASCADE)
     amount = models.PositiveIntegerField()
-    type = models.IntegerField(choices=choices, null=True)
-    accountDocument = models.ForeignKey("AccountingDocument", on_delete=models.CASCADE, related_name="transaction")
+    type = models.IntegerField(choices=choices)
+    account_document = models.ForeignKey("AccountingDocument", on_delete=models.CASCADE, related_name="transactions")
 
 
 class AccountingDocument(models.Model):
     number = models.PositiveIntegerField()
-    dateTime = jmodels.jDateTimeField()
+    date_time = jmodels.jDateTimeField()
     description = models.CharField(max_length=255)
-    prepared = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="prepared")
-    confirmed = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="confirmed")
-    approved = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="approved")
+    prepared = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="prepared_documents")
+    confirmed = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="confirmed_documents")
+    approved = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="approved_documents")
 
 
     def sum_transations(self):
-        transactions = self.transaction.all()
+        transactions = self.transactions.all()
         sum = 0
         for transaction in transactions:
             sum += transaction.amount
