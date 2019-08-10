@@ -1,7 +1,7 @@
 from django.db import models
 from django_jalali.db import models as jmodels
 from user_management.models import UserProfile
-
+from tag.models import Tag
 
 # Create your models here.
 
@@ -46,7 +46,7 @@ class AccountingDocument(models.Model):
     confirmed = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="confirmed_documents")
     approved = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="approved_documents")
 
-
+    tag = models.ForeignKey(Tag, on_delete=models.PROTECT, related_name="documents", null=True, blank=True)
 
     def sum_transations(self):
         transactions = self.transactions.all()
