@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'django_jalali',
     'accounting.apps.AccountingConfig',
+    'tag.apps.TagConfig',
     'user_management.apps.UserManagementConfig'
 ]
 

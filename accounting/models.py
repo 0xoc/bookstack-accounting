@@ -5,7 +5,6 @@ from user_management.models import UserProfile
 
 # Create your models here.
 
-
 class Account(models.Model):
     parent = models.ForeignKey("Account", related_name="children", on_delete=models.CASCADE, blank=True, null=True)
     code = models.CharField(max_length=255)
@@ -46,6 +45,7 @@ class AccountingDocument(models.Model):
     prepared = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="prepared_documents")
     confirmed = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="confirmed_documents")
     approved = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="approved_documents")
+
 
 
     def sum_transations(self):
