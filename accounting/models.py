@@ -5,11 +5,19 @@ from tag.models import Tag
 
 # Create your models here.
 
+
+account_types = ((0,'گروه اصلی'),
+                 (1, 'حساب کل'),
+                 (2, 'حساب معین'),
+                 (3, 'تفصیلی'))
+
+
 class Account(models.Model):
     parent = models.ForeignKey("Account", related_name="children", on_delete=models.CASCADE, blank=True, null=True)
     code = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
-    description = models.CharField(max_length=255)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    type = models.CharField(max_length=1, choices=account_types)
 
     def __str__(self):
         return self.title
