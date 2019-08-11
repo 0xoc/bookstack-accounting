@@ -11,3 +11,4 @@ class AccountAdmin(admin.ModelAdmin):
 admin.site.register(Account, AccountAdmin)
 admin.site.register(Transaction)
 admin.site.register(AccountingDocument)
+admin.site.register(Organization)

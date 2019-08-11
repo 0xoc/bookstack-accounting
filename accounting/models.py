@@ -12,12 +12,32 @@ account_types = ((0,'گروه اصلی'),
                  (3, 'تفصیلی'))
 
 
+class Organization(models.Model):
+    name = models.CharField(max_length=255)
+    alias_name = models.CharField(max_length=255, blank=True, null=True)
+    national_id = models.CharField(max_length=255, blank=True, null=True)
+    registration_id = models.CharField(max_length=255, blank=True, null=True)
+    e_id = models.CharField(max_length=255, blank=True, null=True)
+    description = models.CharField(max_length=255, blank=True, null=True)
+    postal_address = models.CharField(max_length=255, blank=True, null=True)
+    telephone = models.CharField(max_length=255, blank=True, null=True)
+    fax = models.CharField(max_length=255, blank=True, null=True)
+    email = models.CharField(max_length=255, blank=True, null=True)
+    staff = models.ManyToManyField(UserProfile, related_name="organization")
+
+
+class Product(models.Model):
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
+    name = models.CharField(max_length=255)
+
+
 class Account(models.Model):
     parent = models.ForeignKey("Account", related_name="children", on_delete=models.CASCADE, blank=True, null=True)
     code = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, null=True)
     type = models.CharField(max_length=1, choices=account_types)
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):
         return self.title
@@ -50,19 +70,12 @@ class AccountingDocument(models.Model):
     number = models.PositiveIntegerField()
     date_time = jmodels.jDateTimeField()
     description = models.CharField(max_length=255)
-    prepared = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="prepared_documents")
-    confirmed = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="confirmed_documents")
-    approved = models.ForeignKey(UserProfile, on_delete=models.PROTECT, related_name="approved_documents")
-
+    organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
     tag = models.ForeignKey(Tag, on_delete=models.PROTECT, related_name="documents", null=True, blank=True)
-
-    def sum_transations(self):
-        transactions = self.transactions.all()
-        sum = 0
-        for transaction in transactions:
-            sum += transaction.amount
-        return sum
 
     def __str__(self):
         return str(self.number)
+
+
+
 
