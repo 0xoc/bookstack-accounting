@@ -10,13 +10,13 @@ class UserProfileCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = ['name',
+        fields = ('name',
                   'person_type',
                   'national_id',
                   'telephone',
                   'address',
                   'username',
-                  'password']
+                  'password')
 
     def validate_username(self, username):
         try:
