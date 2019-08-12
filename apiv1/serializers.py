@@ -252,4 +252,4 @@ class TransactionRetrieveSerializer(serializers.ModelSerializer):
             'accounting_document',
         )
 
-#model manager
+# model manager
