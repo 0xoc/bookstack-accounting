@@ -7,24 +7,8 @@ from django.contrib.auth.models import User
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
-        model = UserProfile
-        fields = ('name',
-                  'person_type',
-                  'national_id',
-                  'telephone',
-                  'address',
-                  'username',
-                  'password')
-
-    def validate_username(self, username):
-        try:
-            User.objects.get(username)
-            raise serializers.ValidationError('username existed')
-        except User.DoesNotExist:
-            return username
-
-    model = User
-    fields = ('pk', 'username', 'first_name', 'last_name', 'email')
+        model = User
+        fields = ['username', 'first_name', 'last_name', 'email']
 
 
 class UserCreateSerializer(serializers.ModelSerializer):

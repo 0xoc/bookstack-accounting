@@ -19,7 +19,7 @@ class UserProfileCreateView(CreateAPIView):
             return Response({'errors': s.errors}, status=status.HTTP_400_BAD_REQUEST)
 
 
-class UserProfileRetrieveDetail(ListAPIView):
+class UserProfileRetrieveView(ListAPIView):
     queryset = UserProfile.objects.all()
     serializer_class = UserProfileRetrieveSerializer
 
