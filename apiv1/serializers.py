@@ -1,5 +1,6 @@
-from django.core.exceptions import ValidationError
 from rest_framework import serializers
+
+from accounting.models import Organization
 from user_management.models import UserProfile
 from django.contrib.auth.models import User
 
@@ -71,4 +72,59 @@ class UserProfileRetrieveSerializer(serializers.ModelSerializer):
             'national_id',
             'telephone',
             'address',
+        ]
+
+
+class OrganizationCreateSerializer(serializers.ModelSerializer):
+
+    shop_admin = UserProfileCreateSerializer()
+
+    class Meta:
+        model = Organization
+        fields = [
+            'name',
+            'alias_name',
+            'national_id',
+            'registration_id',
+            'e_id',
+            'description',
+            'postal_address',
+            'telephone',
+            'fax',
+            'email',
+            'shop_admin',
+        ]
+
+    def create(self, validated_data):
+        shop_admin_info = validated_data.pop('shop_admin')
+
+        admin = UserProfileCreateSerializer(data=shop_admin_info)
+        admin.is_valid()
+        admin = admin.save()
+
+        organization = Organization(**validated_data)
+        organization.save()
+        organization.staff.add(admin)
+
+        return organization
+
+
+class OrganizationRetrieveSerializer(serializers.ModelSerializer):
+
+    staff = UserProfileCreateSerializer(many=True)
+
+    class Meta:
+        model = Organization
+        fields = [
+            'name',
+            'alias_name',
+            'national_id',
+            'registration_id',
+            'e_id',
+            'description',
+            'postal_address',
+            'telephone',
+            'fax',
+            'email',
+            'staff',
         ]
