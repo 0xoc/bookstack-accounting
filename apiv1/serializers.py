@@ -33,12 +33,12 @@ class UserProfileCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = (
+        fields = [
             'user',
             'person_type',
             'national_id',
             'telephone',
-            'address')
+            'address']
 
     def create(self, validated_data):
         user_info = validated_data.pop('user')  # pop user info from validated data
@@ -62,13 +62,13 @@ class UserProfileRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = UserProfile
-        fields = (
+        fields = [
             'user',
             'person_type',
             'national_id',
             'telephone',
             'address',
-        )
+        ]
 
 
 class OrganizationCreateSerializer(serializers.ModelSerializer):
@@ -76,7 +76,7 @@ class OrganizationCreateSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = (
+        fields = [
             'name',
             'alias_name',
             'national_id',
@@ -88,7 +88,7 @@ class OrganizationCreateSerializer(serializers.ModelSerializer):
             'fax',
             'email',
             'shop_admin',
-        )
+        ]
 
     def create(self, validated_data):
         shop_admin_info = validated_data.pop('shop_admin')
@@ -108,7 +108,7 @@ class OrganizationRetrieveSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Organization
-        fields = (
+        fields = [
             'name',
             'alias_name',
             'national_id',
@@ -120,30 +120,17 @@ class OrganizationRetrieveSerializer(serializers.ModelSerializer):
             'fax',
             'email',
             'staff',
-        )
+        ]
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
-    organization = OrganizationCreateSerializer()
 
     class Meta:
         model = Product
-        fields = (
+        fields = [
             'organization',
             'name'
-        )
-
-    def create(self, validated_data):
-        organization_info = validated_data.pop('organization')
-        organization = OrganizationCreateSerializer(data=organization_info)
-        organization.is_valid()
-        organization = organization.save()
-
-        product = Product(**validated_data)
-        product.save()
-        product.organization = organization
-
-        return product
+        ]
 
 
 class ProductRetrieveSerializer(serializers.ModelSerializer):
