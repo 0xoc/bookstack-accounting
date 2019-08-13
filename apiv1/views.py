@@ -1,3 +1,6 @@
+from rest_framework.permissions import IsAuthenticated
+
+from apiv1.permissions import CanAddStaff
 from .serializers import *
 from rest_framework.generics import CreateAPIView, RetrieveAPIView, ListAPIView
 from rest_framework.response import Response
@@ -36,3 +39,20 @@ class OrganizationCreateView(CreateAPIView):
             return Response(new_organization_data)
         else:
             return Response({'errors': s.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+class OrganizationAddStaffView(CreateAPIView):
+    serializer_class = StaffCreateSerializer
+    permission_classes = [IsAuthenticated, CanAddStaff, ]
+
+    def post(self, request, *args, **kwargs):
+        organization = Organization.objects.get(pk=kwargs.get('organization_id'))
+        s = self.serializer_class(data=request.data, context={'organization': organization})
+
+        if s.is_valid():
+            s = s.save()
+            new_organization_data = OrganizationRetrieveSerializer(instance=s).data
+            return Response(new_organization_data)
+        else:
+            return Response({'errors': s.errors}, status=status.HTTP_400_BAD_REQUEST)
+

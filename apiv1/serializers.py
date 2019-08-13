@@ -2,8 +2,7 @@ from rest_framework import serializers
 
 from accounting.models import *
 from user_management.models import UserProfile
-from django.contrib.auth.models import User
-
+from django.contrib.auth.models import User, Group
 
 class UserRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
@@ -96,6 +95,7 @@ class OrganizationCreateSerializer(serializers.ModelSerializer):
         admin = UserProfileCreateSerializer(data=shop_admin_info)
         admin.is_valid()
         admin = admin.save()
+        Group.objects.get(name="organization_admin").user_set.add(admin.user)
 
         organization = Organization(**validated_data)
         organization.save()
@@ -224,3 +224,22 @@ class TransactionRetrieveSerializer(serializers.ModelSerializer):
         )
 
 # model manager
+
+
+class StaffCreateSerializer(serializers.Serializer):
+    user_profile = UserProfileCreateSerializer()
+
+    def create(self, validated_data):
+        user_info = validated_data.pop('user_profile', None)
+
+        staff = UserProfileCreateSerializer(data=user_info)
+        staff.is_valid()
+        staff = staff.save()
+        Group.objects.get(name="organization_staff").user_set.add(staff.user)
+
+        org = self.context.get('organization')
+        org.staff.add(staff)
+
+        return org
+
+

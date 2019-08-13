@@ -38,7 +38,6 @@ INSTALLED_APPS = [
     'django_jalali',
     'accounting.apps.AccountingConfig',
     'tag.apps.TagConfig',
-    'organization.apps.OrganizationConfig',
     'user_management.apps.UserManagementConfig',
     'rest_framework',
 ]
