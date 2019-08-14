@@ -36,7 +36,7 @@ class Account(models.Model):
     code = models.CharField(max_length=255)
     title = models.CharField(max_length=255)
     description = models.CharField(max_length=255, blank=True, null=True)
-    type = models.CharField(max_length=1, choices=account_types)
+    type = models.IntegerField(choices=account_types)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
 
     def __str__(self):

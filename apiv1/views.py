@@ -56,3 +56,20 @@ class OrganizationAddStaffView(CreateAPIView):
         else:
             return Response({'errors': s.errors}, status=status.HTTP_400_BAD_REQUEST)
 
+
+class AccountingDocumentCreateView(CreateAPIView):
+    serializer_class = AccountingDocumentCreateSerializer
+
+    def post(self, request, *args, **kwargs):
+        organization = Organization.objects.get(pk=kwargs.get('organization_id'))
+        s = self.serializer_class(data=request.data, partial=True,  context={'organization': organization})
+
+        if s.is_valid():
+            s = s.save()
+            response = AccountingDocumentRetrieveSerializer(instance=s).data
+            return Response(response)
+        else:
+            return Response({'errors': s.errors}, status=status.HTTP_400_BAD_REQUEST)
+
+
+

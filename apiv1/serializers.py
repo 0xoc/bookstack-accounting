@@ -4,6 +4,7 @@ from accounting.models import *
 from user_management.models import UserProfile
 from django.contrib.auth.models import User, Group
 
+
 class UserRetrieveSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
@@ -124,7 +125,6 @@ class OrganizationRetrieveSerializer(serializers.ModelSerializer):
 
 
 class ProductCreateSerializer(serializers.ModelSerializer):
-
     class Meta:
         model = Product
         fields = [
@@ -173,35 +173,36 @@ class AccountRetrieveSerializer(serializers.ModelSerializer):
     pass
 
 
-class AccountingDocumentCreateSerializer(serializers.ModelSerializer):
+class TagCreateSerializer(serializers.ModelSerializer):
     class Meta:
-        model = AccountingDocument
+        model = Tag
         fields = (
-            'number',
-            'date_time',
-            'description',
-            'organization',
-            'tag'
+            'code',
+            'description'
         )
 
     def create(self, validated_data):
-        accounting_document = AccountingDocument(**validated_data)
-        accounting_document.save()
-        return accounting_document
+        tag = Tag(**validated_data)
+        tag.save()
+        return tag
 
 
-class AccountingDocumentRetrieveSerializer(serializers.ModelSerializer):
-    pass
+class TagRetrieveSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Tag
+        fields = (
+            'code',
+            'description'
+        )
 
 
-class TransactionAccountCreateSerializer(serializers.ModelSerializer):
+class TransactionCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Transaction
         fields = (
             'account',
             'amount',
             'type',
-            'accounting_document',
         )
 
     def create(self, validated_data):
@@ -212,7 +213,6 @@ class TransactionAccountCreateSerializer(serializers.ModelSerializer):
 
 class TransactionRetrieveSerializer(serializers.ModelSerializer):
     account = AccountRetrieveSerializer()
-    accounting_document = AccountingDocumentRetrieveSerializer()
 
     class Meta:
         model = Transaction
@@ -220,10 +220,44 @@ class TransactionRetrieveSerializer(serializers.ModelSerializer):
             'account',
             'amount',
             'type',
-            'accounting_document',
         )
 
-# model manager
+
+class AccountingDocumentCreateSerializer(serializers.ModelSerializer):
+    transactions = TransactionCreateSerializer(many=True)
+
+    class Meta:
+        model = AccountingDocument
+        fields = (
+            'transactions',
+            'number',
+            'date_time',
+            'tag',
+        )
+
+    def create(self, validated_data):
+        transactions = validated_data.pop('transactions', None)
+        accountDocument = AccountingDocument(**validated_data)
+        org = self.context.get('organization')
+        accountDocument.organization = org
+        accountDocument.save()
+        if transactions is not None:
+            for transaction in transactions:
+                transaction.account_document = accountDocument
+        return accountDocument
+
+
+class AccountingDocumentRetrieveSerializer(serializers.ModelSerializer):
+    transactions = TransactionRetrieveSerializer(many=True)
+
+    class Meta:
+        model = AccountingDocument
+        fields = (
+            'transactions',
+            'number',
+            'date_time',
+            'tag',
+        )
 
 
 class StaffCreateSerializer(serializers.Serializer):
@@ -241,5 +275,3 @@ class StaffCreateSerializer(serializers.Serializer):
         org.staff.add(staff)
 
         return org
-
-
